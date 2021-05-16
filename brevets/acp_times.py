@@ -29,6 +29,8 @@ def open_time(control_dist_km, brevet_dist_km, brevet_start_time):
        A date object indicating the control open time.
        This will be in the same time zone as the brevet start time.
     """
+    assert (control_dist_km >= 0) and (control_dist_km <= brevet_dist_km * 1.2)
+
     time = 0
 
     # When the control distance is greater than the brevet distance,
@@ -50,8 +52,8 @@ def open_time(control_dist_km, brevet_dist_km, brevet_start_time):
             break
         # Case 2: When control distance is bigger than the highest bound of the control location range
         if control_dist_km > high_dist:
-            # Add time based on the highest bound of the control location
-            time += high_dist / max_speed
+            # Add time based on the range of the control location
+            time += (high_dist - low_dist) / max_speed
 
     # Convert the time in decimal into the format in minutes and hours
     hour, minute = divmod(time, 1)
@@ -71,6 +73,8 @@ def close_time(control_dist_km, brevet_dist_km, brevet_start_time):
        A date object indicating the control close time.
        This will be in the same time zone as the brevet start time.
     """
+    assert (control_dist_km >= 0) and (control_dist_km <= brevet_dist_km * 1.2)
+
     time = 0
 
     # When the control distance is greater than equal to the brevet distance,
@@ -95,10 +99,14 @@ def close_time(control_dist_km, brevet_dist_km, brevet_start_time):
                 break
             # Case 2: When control distance is bigger than the highest bound of the control location range
             if control_dist_km > high_dist:
-                # Add time based on the highest bound of the control location
-                time += high_dist / min_speed
+                # Add time based on the range of the control location
+                time += (high_dist - low_dist) / min_speed
 
     # Convert the time in decimal into the format in minutes and hours
     hour, minute = divmod(time, 1)
     minute = round(minute * 60)
     return brevet_start_time.shift(hours=hour, minutes=minute)
+
+if __name__ == '__main__':
+    a = open_time(570, 600, arrow.get("2018-11-17T06:00"))
+    print(a)
