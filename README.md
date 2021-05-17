@@ -41,6 +41,9 @@ The algorithm for calculating the closing time is pretty similar to the algorith
     - There is a dictionary ```set_time_limit``` that store the brevet distance as its key and the set time limit as its value associated with the key.
 * Oddities: When the control distance is less than or equal to 60 km, the maximum time limit for a control within the first 60km is based on 20 km/hr, plus 1 hour. 
 
+### Web Page Error Dealing
+
+Whenever the negative number or the number that is 20% longer than the brevet distance is typed in as the input for the control distance, the browser will alert the error and then reset the input values.
 
 ## Getting started
 
