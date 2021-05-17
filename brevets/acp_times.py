@@ -11,7 +11,6 @@ import arrow, datetime
 #  with these signatures. You must keep
 #  these signatures even if you don't use all the
 #  same arguments.
-#
 
 control_min_speed = {"0-600": 15, "600-1000": 11.428, "1000-1300": 13.333}
 control_max_speed = {"0-200": 34, "200-400": 32, "400-600": 30, "600-1000": 28, "1000-1300": 26}
@@ -42,15 +41,15 @@ def open_time(control_dist_km, brevet_dist_km, brevet_start_time):
     for control_dist_range in control_max_speed:
         # Get the maximum speed corresponding to the control location range
         max_speed = control_max_speed[control_dist_range]
-        # Get the lowest and highest bound of the control location range
+        # Get the lower and upper bound of the control location range
         low_dist, high_dist = list(map(int, control_dist_range.split("-")))
         # Case 1: When control distance is within the control location range
         if low_dist <= control_dist_km <= high_dist:
-            # Since time for the lowest bound of the control location range is already added
+            # Since time for the distance below the lower bound of the control location range is already added
             # on Case 2, add time for the difference between lowest bound and control distance
             time += (control_dist_km - low_dist) / max_speed
             break
-        # Case 2: When control distance is bigger than the highest bound of the control location range
+        # Case 2: When control distance is bigger than the upper bound of the control location range
         if control_dist_km > high_dist:
             # Add time based on the range of the control location
             time += (high_dist - low_dist) / max_speed
@@ -89,15 +88,15 @@ def close_time(control_dist_km, brevet_dist_km, brevet_start_time):
         for control_dist_range in control_min_speed:
             # Get the minimum speed corresponding to the control location range
             min_speed = control_min_speed[control_dist_range]
-            # Get the lowest and highest bound of the control location range
+            # Get the lower and upper bound of the control location range
             low_dist, high_dist = list(map(int, control_dist_range.split("-")))
             # Case 1: When control distance is within the control location range
             if low_dist <= control_dist_km <= high_dist:
-                # Since time for the lowest bound of the control location range is already added
-                # on Case 2, add time for the difference between lowest bound and control distance
+                # Since time for the distance below the lower bound of the control location range is already added
+                # on Case 2, add time for the difference between lower bound and control distance
                 time += (control_dist_km - low_dist) / min_speed
                 break
-            # Case 2: When control distance is bigger than the highest bound of the control location range
+            # Case 2: When control distance is bigger than the upper bound of the control location range
             if control_dist_km > high_dist:
                 # Add time based on the range of the control location
                 time += (high_dist - low_dist) / min_speed
