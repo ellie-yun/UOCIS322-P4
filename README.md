@@ -1,17 +1,46 @@
 # UOCIS322 - Project 4 #
+> **Author: Ellie Yun, yyun@uoregon.edu**
+
 Brevet time calculator.
 
 ## Overview
 
-Reimplement the RUSA ACP controle time calculator with Flask and AJAX.
+Implement the RUSA ACP controle time calculator with Flask and AJAX.
 
 ### ACP controle times
 
 That's *"controle"* with an *e*, because it's French, although "control" is also accepted. Controls are points where a rider must obtain proof of passage, and control[e] times are the minimum and maximum times by which the rider must arrive at the location.
 
-The algorithm for calculating controle times is described here [https://rusa.org/pages/acp-brevet-control-times-calculator](https://rusa.org/pages/acp-brevet-control-times-calculator). Additional background information is given here [https://rusa.org/pages/rulesForRiders](https://rusa.org/pages/rulesForRiders). The description is ambiguous, but the examples help. Part of finishing this project is clarifying anything that is not clear about the requirements, and documenting it clearly.  
+The algorithm for calculating controle times is described here [https://rusa.org/pages/acp-brevet-control-times-calculator](https://rusa.org/pages/acp-brevet-control-times-calculator). Additional background information is given here [https://rusa.org/pages/rulesForRiders](https://rusa.org/pages/rulesForRiders).  
 
 We are essentially replacing the calculator here [https://rusa.org/octime_acp.html](https://rusa.org/octime_acp.html). We can also use that calculator to clarify requirements and develop test data.  
+
+### Algorithms implemented in acp_times.py
+
+> Open Time
+
+The calculation of a control's opening time is based on the maximum speed as it's shown here https://rusa.org/pages/acp-brevet-control-times-calculator. 
+First, the function needs to assert that the control distance is positive (including zero) and the control distance is not over 20% longer than the brevet distance.
+When the control distance is greater than the brevet distance and is not over 20% longer than the brevet distance, the control distance has to be set to brevet distance by the rule.
+
+Since the maximum speed depends on the range of the control location, the dictionary ```control_max_speed``` is used to store the range as its key and the speed as the value associated with that key. This dictionary will be iterated through until the function finds the range that includes the control distance passed into the function.  
+
+There are two cases that needs to be considered for calculating the opening time:
+
+1. When the control distance is within the range; Since time for the distance below the lower bound of the control location range is already added on the second case, it just need to add time for the difference on the distance between lower bound of the range and control distance.
+
+2. When the control distance is longer than the higher bound of the range; Add time based on the range of the control location, which can be calculated by the difference between the lower bound and the upper bound of the range divided by the maximum speed associated with that range. 
+
+```Note. The case when the control distance is shorter than the lower bound of the range is not considered because the lower bound of the very first range is zero and the function asserts the control distance is at least zero.``` 
+
+> Close Time
+
+The algorithm for calculating the closing time is pretty similar to the algorithm for calculating the opening time. The following might be the differences: 
+* The calculation of a control's closing time is based on the minimum speed as it's shown here https://rusa.org/pages/acp-brevet-control-times-calculator. The information is stored in a dictionary ```control_min_speed```.
+* When the control distance is greater than equal to the brevet distance but not over 20% longer than the brevet distance, the time has to be set to the set time limits by the rule.
+    - There is a dictionary ```set_time_limit``` that store the brevet distance as its key and the set time limit as its value associated with the key.
+* Oddities: When the control distance is less than or equal to 60 km, the maximum time limit for a control within the first 60km is based on 20 km/hr, plus 1 hour. 
+
 
 ## Getting started
 
@@ -37,10 +66,6 @@ To make automated testing more practical, your open and close time calculations 
 
 We should be able to run your test suite by changing to the `brevets` directory and typing `nosetests`. All tests should pass. You should have at least 5 test cases, and more importantly, your test cases should be chosen to distinguish between an implementation that correctly interprets the ACP rules and one that does not.
 
-### Replacing `README`
-
-This `README` is currently written primarily as instructions to CIS 322 students. Replace it with a proper `README` for an ACP time calculator. Think about what should be included for users and for developers.
-
 ## Tasks
 
 The code under `brevets` can serve as a starting point. It illustrates a very simple AJAX transaction between the Flask server and JavaScript on the web page. Presently, the server does not calculate times (just returns the current time). Other things may be missing; add them as needed. As always, you should fork and then clone this repository, make your changes, and test on the specified server at least once before you submit.
@@ -54,32 +79,6 @@ As always you'll turn in your `credentials.ini` using Canvas, which will point t
 * A `README.md` file that includes not only identifying information (your name, email, etc.) but but also a revised, clear specification of the brevet controle time calculation rules.
 
 * An automated 'nose' test suite.
-
-## Grading Rubric
-
-* If your code works as expected: 100 points. This includes:
-
-	* Completing the frontend in `calc.html`.
-	
-	* Completing the Flask app accordingly (`flask_brevets.py`).
-	
-	* Implementing the logic in `acp_times.py`.
-	
-	* Updating `README` with a clear specification.
-	
-	* Writing at least five correct tests using nose (put them in `tests`, follow Project 3 if necessary) and all pass.
-
-* If the logic in `acp_times.py` is wrong or is missing, up to 30 points will be docked off.
-
-* If the test cases are not there, are invalid or fail, up to 15 points will be docked off.
-
-* If `README` is not clear, missing or not edited, up to 15 points will be docked off.
-
-* If none of the functionalities work, 30 points will be given assuming `credentials.ini` is submitted with the correct URL of your repo and `Dockerfile` builds and runs without any errors.
-    
-* If `Dockerfile` is missing, doesn't build or doesn't run, 10 points will be docked off.
-	
-* If `credentials.ini` is not submitted or the repo is not found, 0 will be assigned.
 
 ## Credits
 
